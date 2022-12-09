@@ -19,5 +19,18 @@ res.status(200).json({
 }
 
 module.exports.createPost =  async(req,res,next)=>{
-console.log('getting all posts ')
+const title =  req.body.title;
+const content = req.body.content;
+res.status(201).json({
+  message:'post created succesffuly',
+  post: {
+      title,
+      content,
+      author:'natty',
+      creator:{name:'natty'},
+      id: 1,
+      createdAt: Date.now(),
+
+    }
+})
 }
