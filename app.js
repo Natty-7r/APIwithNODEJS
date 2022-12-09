@@ -1,10 +1,12 @@
+// core module imports 
 const path = require('path');
 
+// third party module imports 
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const multer = require('multer');
 
+// my module imports 
 const feedRoutes = require('./routes/feed');
 
 const app = express();
@@ -22,6 +24,9 @@ app.use((req, res, next) => {
 app.use('/feed', feedRoutes);
 
 
+mongoose
+.connect('mongodb://127.0.0.1:27017/Post').then(result=>{
+  app.listen(8080);
+})
+.catch(err=>console.log(err))
 
-
-app.listen(8080);

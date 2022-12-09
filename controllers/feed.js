@@ -6,6 +6,9 @@ const path = require('path');
 // third party module imports
 const {validationResult} =  require('express-validator/check');
 
+// my imporst 
+const Post =  require('../models/post')
+
 module.exports.getPosts =  async(req,res,next)=>{
 res.status(200).json({
   posts:[
@@ -33,16 +36,20 @@ if(!validationErrors.isEmpty()){
     errors: validationErrors.array(),
   })
 }
-return res.status(201).json({
-  message:'post created succesffuly',
-  post: {
-      title,
-      content,
-      author:'natty',
-      creator:{name:'natty'},
-      id: 1,
-      createdAt: Date.now(),
 
-    }
+
+const newPost =  new Post({
+  title,
+  content,
+  imageUrl:'/images/cat.jpg',
+  creator:{
+    name:'natty '
+  }
+});
+newPost.save().then(postSaved=>{
+  return res.status(201).json({
+  message:'post created succesffuly',
+  post:postSaved,
 })
+}).catch(err=>console.log(err))
 }
