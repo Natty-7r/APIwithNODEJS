@@ -9,24 +9,19 @@ const {validationResult} =  require('express-validator/check');
 // my imporst 
 const Post =  require('../models/post')
 
-module.exports.getPosts =  async(req,res,next)=>{
-res.status(200).json({
-  posts:[
-    {
-      title:'cat ',
-      author:'natty',
-      imageUrl: 'images/cat.jpg',
-      content:'cat reading a book ',
-      creator:{name:'natty'},
-      _id: 1,
-      createdAt: Date.now(),
-
-    }
-  ]
-})
+exports.getPosts =  async(req,res,next)=>{
+  Post.find().then(posts=>{
+    return res.status(200).json({
+      message:'posts fetched ',
+      posts: posts,
+    })
+  }).then(err=>{
+    if(!err.statusCode) err.statusCode =  500;
+    next(err);
+  })
 }
 
-module.exports.createPost =  async(req,res,next)=>{
+exports.createPost =  async(req,res,next)=>{
 const title =  req.body.title;
 const content = req.body.content;
 const validationErrors =  validationResult(req);
@@ -50,7 +45,28 @@ newPost.save().then(postSaved=>{
   post:postSaved,
 })
 }).catch(err=>{
-  err.statusCode =  500;
+  if(!err.statusCode)
+   err.statusCode =  500;
+  next(err);
+})
+}
+exports.getPost =  async(req,res,next) =>{
+const postId =  req.params.postId;
+Post.findById(postId).then(post=>{
+  if(!post){
+  const error =  new Error('post could not be found !');
+  error.statusCode =  404;
+  throw error;
+  }
+  else 
+    return res.status(200).json({
+    message: "Post fetched  ",
+    post:post,
+  });
+
+}).catch(err=>{
+  if(!err.statusCode)
+   err.statusCode = 500;
   next(err);
 })
 }

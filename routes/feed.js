@@ -8,14 +8,17 @@ const {body} =  require('express-validator/check')
 // my module imports 
 const feedController = require('../controllers/feed');
 
+// helper functions 
+const postValidation =  [
+body('title').isLength({min:5}).withMessage('must be at least 7 character long'),
+body('content').isLength({min:7}).withMessage('content must be at least 7 characters')];
 
-// GET /feed/posts
+
+// GET get posts
 router.get('/posts', feedController.getPosts);
 
-//POST /feed/post
-router.post('/post',[
-body('title').isLength({min:5}).withMessage('must be at least 7 character long'),
-body('content').isLength({min:7}).withMessage('content must be at least 7 characters')]
-,feedController.createPost)
+//POST single post 
+router.post('/post',postValidation,feedController.createPost)
+router.get('/post/:postId',feedController.getPost)
 
 module.exports = router;
