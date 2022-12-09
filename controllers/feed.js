@@ -10,12 +10,14 @@ const {validationResult} =  require('express-validator/check');
 const Post =  require('../models/post')
 
 exports.getPosts =  async(req,res,next)=>{
-  Post.find().then(posts=>{
+  Post.find()
+  .then(posts=>{
     return res.status(200).json({
       message:'posts fetched ',
       posts: posts,
     })
-  }).then(err=>{
+  })
+  .catch(err=>{
     if(!err.statusCode) err.statusCode =  500;
     next(err);
   })
@@ -24,9 +26,15 @@ exports.getPosts =  async(req,res,next)=>{
 exports.createPost =  async(req,res,next)=>{
 const title =  req.body.title;
 const content = req.body.content;
+const filename = req?.file?.filename; 
 const validationErrors =  validationResult(req);
 if(!validationErrors.isEmpty()){
   const error =  new Error('validation error');
+  error.statusCode =  422;
+  next(error);
+}
+if(!req.file){
+  const error =  new Error('file not provided!');
   error.statusCode =  422;
   next(error);
 }
@@ -34,20 +42,22 @@ if(!validationErrors.isEmpty()){
 const newPost =  new Post({
   title,
   content,
-  imageUrl:'/images/cat.jpg',
+  imageUrl:`images/${filename}`,
   creator:{
     name:'natty '
   }
 });
-newPost.save().then(postSaved=>{
+newPost.save()
+.then(postSaved=>{
   return res.status(201).json({
   message:'post created succesffuly',
   post:postSaved,
 })
-}).catch(err=>{
+})
+.catch(err=>{
   if(!err.statusCode)
    err.statusCode =  500;
-  next(err);
+   next(err);
 })
 }
 exports.getPost =  async(req,res,next) =>{
