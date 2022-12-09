@@ -130,17 +130,25 @@ Post.findById(postId).then(post=>{
   next(err);
 })
 }
-exports.deletePost =  (req,res,next)=>{
+exports.deletePost = async  (req,res,next)=>{
   const postId =  req.params.postId;
-  Post.deleteOne({_id: postId})
-  .then(result=>{
+  try {
+     const postToDelete =  await Post.findById(postId);
+  if(!postToDelete){
+     const error =  new Error('validation error');
+     error.statusCode =  422;
+     throw error;
+  }
+   clearImage(postToDelete.imageUrl);
+   Post.findByIdAndRemove(postToDelete._id).then(deleteResult=>{
     return res.status(200).json({
       message:'post deleted successfully',
     })
   })
-  .catch(err=>{
-    if(!err.statusCode)
+  } catch (err) {
+      if(!err.statusCode)
     err.statusCode  =  500;
     next(err)
-  })
+  }
+  
 }
