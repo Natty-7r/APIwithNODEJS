@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const feedRoutes = require('./routes/feed');
 
 const app = express();
+app.use('.images',express.static(path.join(__dirname,'images')));
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
@@ -25,7 +26,7 @@ app.use('/feed', feedRoutes);
 
 
 mongoose
-.connect('mongodb://127.0.0.1:27017/Post').then(result=>{
+.connect('mongodb://127.0.0.1:27017/Post',).then(result=>{
   app.listen(8080);
 })
 .catch(err=>console.log(err))
