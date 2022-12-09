@@ -1,5 +1,10 @@
+
+// core module imports 
 const fs = require('fs');
 const path = require('path');
+
+// third party module imports
+const {validationResult} =  require('express-validator/check');
 
 module.exports.getPosts =  async(req,res,next)=>{
 res.status(200).json({
@@ -21,7 +26,14 @@ res.status(200).json({
 module.exports.createPost =  async(req,res,next)=>{
 const title =  req.body.title;
 const content = req.body.content;
-res.status(201).json({
+const validationErrors =  validationResult(req);
+if(!validationErrors.isEmpty()){
+  return res.status(422).json({
+    message: 'validation error',
+    errors: validationErrors.array(),
+  })
+}
+return res.status(201).json({
   message:'post created succesffuly',
   post: {
       title,
