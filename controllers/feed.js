@@ -13,7 +13,7 @@ const Post =  require('../models/post')
 
 const clearImage = filePath=> {
   fs.unlink(
-  path.join(__dirname,'../','images',filePath),
+  path.join(__dirname,'../',filePath),
   err=>console.log(err)
   );
 
@@ -115,7 +115,7 @@ Post.findById(postId).then(post=>{
     error.statusCode =  404;
     throw error;
   }
-  // if(post.imageUrl!== imageUrl) clearImage(post.imageUrl);
+  if(post.imageUrl!== imageUrl) clearImage(post.imageUrl);
   post.title = title;
   post.content = content;
   post.imageUrl = imageUrl;
