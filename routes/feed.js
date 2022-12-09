@@ -20,6 +20,11 @@ router.get('/posts', feedController.getPosts);
 
 //POST single post 
 router.post('/post',postValidation,feedController.createPost)
+
+// getting single post 
 router.get('/post/:postId',feedController.getPost)
+
+// editing a post 
+router.put('/post/:postId',postValidation,feedController.editPost);
 
 module.exports = router;

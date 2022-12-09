@@ -45,6 +45,7 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 app.use((err,req,res,next)=>{
+  console.log(err, 'eeeeeeeeeee')
   const status =  err.statusCode;
   const errMessage = err.message;
  return  res.status(status).json({
