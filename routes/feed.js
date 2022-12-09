@@ -27,4 +27,7 @@ router.get('/post/:postId',feedController.getPost)
 // editing a post 
 router.put('/post/:postId',postValidation,feedController.editPost);
 
+// deleting post 
+router.delete('/post/:postId',feedController.deletePost);
+
 module.exports = router;
