@@ -14,7 +14,7 @@ router.get('/posts', feedController.getPosts);
 
 //POST /feed/post
 router.post('/post',[
-  body('title').isLength({min:7}).withMessage('must be at least 7 character long'),
+body('title').isLength({min:5}).withMessage('must be at least 7 character long'),
 body('content').isLength({min:7}).withMessage('content must be at least 7 characters')]
 ,feedController.createPost)
 

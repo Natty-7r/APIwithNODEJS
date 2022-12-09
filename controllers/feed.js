@@ -31,12 +31,10 @@ const title =  req.body.title;
 const content = req.body.content;
 const validationErrors =  validationResult(req);
 if(!validationErrors.isEmpty()){
-  return res.status(422).json({
-    message: 'validation error',
-    errors: validationErrors.array(),
-  })
+  const error =  new Error('validation error');
+  error.statusCode =  422;
+  next(error);
 }
-
 
 const newPost =  new Post({
   title,
@@ -51,5 +49,8 @@ newPost.save().then(postSaved=>{
   message:'post created succesffuly',
   post:postSaved,
 })
-}).catch(err=>console.log(err))
+}).catch(err=>{
+  err.statusCode =  500;
+  next(err);
+})
 }

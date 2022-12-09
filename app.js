@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 
 // my module imports 
 const feedRoutes = require('./routes/feed');
+const { json } = require('body-parser');
 
 const app = express();
 app.use('.images',express.static(path.join(__dirname,'images')));
@@ -23,6 +24,13 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes);
+app.use((err,req,res,next)=>{
+  const status =  err.statusCode;
+  const errMessage = err.message;
+ return  res.status(status).json({
+    message:errMessage
+  })
+})
 
 
 mongoose
