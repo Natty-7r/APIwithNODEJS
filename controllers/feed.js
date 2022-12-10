@@ -20,7 +20,6 @@ const clearImage = filePath=> {
 }
 
 exports.getPosts =  async(req,res,next)=>{
-  console.log(req.query)
   const currentPage =  req.query.page;
   const postPerPage =  2;
   let totalItems;
@@ -32,7 +31,7 @@ exports.getPosts =  async(req,res,next)=>{
     return res.status(200).json({
       message:'posts fetched ',
       posts: posts,
-     totalItems: totalItems,
+      totalItems: totalItems,
     })
   })
   .catch(err=>{
