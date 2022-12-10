@@ -139,7 +139,6 @@ exports.deletePost = async  (req,res,next)=>{
      error.statusCode =  422;
      throw error;
   }
-   clearImage(postToDelete.imageUrl);
    Post.findByIdAndRemove(postToDelete._id).then(deleteResult=>{
     return res.status(200).json({
       message:'post deleted successfully',
