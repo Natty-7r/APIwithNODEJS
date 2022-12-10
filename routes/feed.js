@@ -26,7 +26,7 @@ router.get("/posts", isAuth, feedController.getPosts);
 router.post("/post", postValidation, isAuth, feedController.createPost);
 
 // getting single post
-router.get("/post/:postId", isAuth, feedController.getPost);
+router.get("/post/:postId", feedController.getPost);
 
 // editing a post
 router.put("/post/:postId", isAuth, postValidation, feedController.editPost);

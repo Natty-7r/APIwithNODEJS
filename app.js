@@ -58,7 +58,6 @@ app.use("/auth", authRoutes);
 
 // error handler
 app.use((err, req, res, next) => {
-  console.log(err);
   const status = err.statusCode;
   const errMessage = err.message;
   return res.status(status).json({
