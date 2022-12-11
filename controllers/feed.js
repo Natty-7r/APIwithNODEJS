@@ -8,6 +8,7 @@ const { validationResult } = require("express-validator/check");
 // my imporst
 const Post = require("../models/post");
 const User = require("../models/user");
+const io = require("../socket");
 
 // helper functions
 
@@ -60,12 +61,17 @@ exports.createPost = async (req, res, next) => {
       imageUrl: `images/${filename}`,
       creator: req.userId,
     });
-
     await newPost.save();
 
     const user = await User.findById(req.userId);
     user.posts.push(newPost);
     await user.save();
+
+    const socketIo = io.getIo();
+    socketIo.emit("posts", {
+      action: "create",
+      post: { ...newPost._doc, creator: { name: user.name, userId: user._id } },
+    });
 
     return res.status(201).json({
       message: "post created succesffuly",
@@ -119,13 +125,14 @@ exports.editPost = async (req, res, next) => {
       error.statusCode = 422;
       next(error);
     }
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("creator", "name");
     if (!post) {
       const error = new Error("post could not be found !");
       error.statusCode = 404;
       throw error;
     }
-    if (post.creator != req.userId) {
+    console.log(post.creator);
+    if (post.creator._id != req.userId) {
       const error = new Error("Not Authorized !");
       error.statusCode = 401;
       throw error;
@@ -135,6 +142,7 @@ exports.editPost = async (req, res, next) => {
     post.content = content;
     post.imageUrl = imageUrl;
     const updatedPost = await post.save();
+    io.getIo().emit("posts", { action: "update", post: updatedPost });
 
     res.status(200).json({ message: "post updated successfully", post: post });
   } catch (err) {
@@ -152,6 +160,7 @@ exports.deletePost = async (req, res, next) => {
       error.statusCode = 422;
       throw error;
     }
+
     if (postToDelete.creator != req.userId) {
       const error = new Error(" Not Authorized !");
       error.statusCode = 401;
@@ -163,7 +172,7 @@ exports.deletePost = async (req, res, next) => {
     user.posts.pull(postToDelete._id);
     clearImage(postToDelete.imageUrl);
     await user.save();
-
+    io.getIo().emit("posts", { action: "delete", post: postId });
     return res.status(200).json({
       message: "post deleted successfully",
     });

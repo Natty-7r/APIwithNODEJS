@@ -48,7 +48,10 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "OPTIONS,POST,GET,PUT,PATCH,DELETE"
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type,Authorization,Referrs,Accept"
+  );
   next();
 });
 
@@ -68,6 +71,14 @@ app.use((err, req, res, next) => {
 mongoose
   .connect("mongodb://127.0.0.1:27017/Post")
   .then((result) => {
-    app.listen(8080);
+    const server = app.listen(8080);
+    const io = require("./socket").initIo(server);
+    io.on("connection", (socket) => {
+      console.log("client connected ");
+    });
+    io.on("hello", (data) => {
+      console.log(data.message);
+      console.log(data);
+    });
   })
   .catch((err) => console.log(err));
