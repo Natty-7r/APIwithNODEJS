@@ -24,6 +24,7 @@ exports.getPosts = async (req, res, next) => {
   const totalItems = await Post.find().countDocuments();
   try {
     const posts = await Post.find()
+      .sort({ createdAt: -1 })
       .skip((currentPage - 1) * postPerPage)
       .limit(postPerPage)
       .populate("creator", "name");
