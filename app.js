@@ -6,10 +6,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const { graphqlHTTP } = require("express-graphql");
 
 // my module imports
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolver");
 
 // helper functions
 const multerStorage = multer.diskStorage({
@@ -59,6 +62,20 @@ app.use((req, res, next) => {
 app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
 
+// for graphql
+app.use(
+  "/graphql",
+  (req, res, next) => {
+    if (req.method == "OPTIONS") {
+      res.sendStatus(200);
+    } else next();
+  },
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver,
+    graphiql: true,
+  })
+);
 // error handler
 app.use((err, req, res, next) => {
   const status = err.statusCode;
@@ -69,7 +86,10 @@ app.use((err, req, res, next) => {
 });
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/Post")
+  .connect("mongodb://127.0.0.1:27017/Post", {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
   .then((result) => {
     const server = app.listen(8080);
     const io = require("./socket").initIo(server);
